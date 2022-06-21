@@ -1,3 +1,6 @@
+using HostelListing.Configurations;
+using HostelListing.Data;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 
@@ -23,7 +26,10 @@ namespace HostelListing
 
                 // Add services to the container.
 
-                builder.Services.AddControllers();
+                builder.Services.AddDbContext<DatabaseContext>(options =>
+                    options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConntection"))
+                );
+
                 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
                 builder.Services.AddEndpointsApiExplorer();
                 builder.Services.AddSwaggerGen();
@@ -39,6 +45,12 @@ namespace HostelListing
                     .AllowAnyMethod()
                     .AllowAnyHeader());
                 });
+
+                builder.Services.AddAutoMapper(typeof(MapperInitializer));
+
+                builder.Services.AddControllers();
+
+                // Configure the app
 
                 var app = builder.Build();
 
