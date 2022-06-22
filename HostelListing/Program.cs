@@ -1,5 +1,7 @@
 using HostelListing.Configurations;
 using HostelListing.Data;
+using HostelListing.IRepository;
+using HostelListing.Repository;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
@@ -37,7 +39,7 @@ namespace HostelListing
                 // logging
                 builder.Host.UseSerilog();
 
-                // cors
+                // CORS (Allow All)
                 builder.Services.AddCors(o =>
                 {
                     o.AddPolicy("AllowAll", builder =>
@@ -46,9 +48,13 @@ namespace HostelListing
                     .AllowAnyHeader());
                 });
 
+                // Auto-Mapper
                 builder.Services.AddAutoMapper(typeof(MapperInitializer));
 
-                builder.Services.AddControllers();
+                builder.Services.AddControllers().AddNewtonsoftJson(op => op.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+                // Dependency Injection
+                builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
                 // Configure the app
 
