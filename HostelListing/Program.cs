@@ -2,6 +2,9 @@ using HostelListing.Configurations;
 using HostelListing.Data;
 using HostelListing.IRepository;
 using HostelListing.Repository;
+using HostelListing.Services;
+using HostelListing.Services.Contracts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
@@ -10,6 +13,7 @@ namespace HostelListing
 {
     public class Program
     {
+
         public static void Main(string[] args)
         {
             // logging
@@ -31,6 +35,10 @@ namespace HostelListing
                 builder.Services.AddDbContext<DatabaseContext>(options =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConntection"))
                 );
+
+                builder.Services.AddAuthentication();
+                builder.Services.ConfigureIdentity();
+                builder.Services.ConfigureJWT(builder.Configuration);
 
                 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
                 builder.Services.AddEndpointsApiExplorer();
@@ -55,6 +63,7 @@ namespace HostelListing
 
                 // Dependency Injection
                 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+                builder.Services.AddScoped<IAuthManager, AuthManager>();
 
                 // Configure the app
 

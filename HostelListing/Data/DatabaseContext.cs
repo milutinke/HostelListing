@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HostelListing.Configurations.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace HostelListing.Data
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : IdentityDbContext<ApiUser>
     {
         public DatabaseContext(DbContextOptions options) : base(options)
         { }
@@ -12,57 +14,17 @@ namespace HostelListing.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Country>().HasData(
-                new Country
-                {
-                    Id = 1,
-                    Name = "Jamaica",
-                    ShortName = "JM"
-                },
+            // Identity Core required
+            base.OnModelCreating(builder);
 
-                new Country
-                {
-                    Id = 2,
-                    Name = "Bahamas",
-                    ShortName = "BS"
-                },
+            // User roles
+            builder.ApplyConfiguration(new RoleConfiguration());
 
-                new Country
-                {
-                    Id = 3,
-                    Name = "Cayman Islands",
-                    ShortName = "CI"
-                }
-            );
+            // Seeding Countries
+            builder.ApplyConfiguration(new CountryConfiguration());
 
-            builder.Entity<Hotel>().HasData(
-                new Hotel
-                {
-                    Id = 1,
-                    Name = "Sandals Resort and Spa",
-                    Address = "Negril",
-                    CountryId = 1,
-                    Rating = 4.5
-                },
-
-                new Hotel
-                {
-                    Id = 2,
-                    Name = "Grand Paladium",
-                    Address = "Nassua",
-                    CountryId = 2,
-                    Rating = 4.3
-                },
-
-                new Hotel
-                {
-                    Id = 3,
-                    Name = "Comfort Suites",
-                    Address = "George Town",
-                    CountryId = 3,
-                    Rating = 4
-                }
-            );
+            // Seeding hotels
+            builder.ApplyConfiguration(new HotelConfiguration());
         }
     }
 }
